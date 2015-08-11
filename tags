@@ -1,0 +1,53 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+CPPFLAGS	makefile	/^CPPFLAGS =  $(addprefix -I, $(include_dirs)) $(addprefix -L,$(LDFLAGS))$/;"	m
+Event	Event.h	/^class Event$/;"	c
+Event::getName	Event.h	/^	const char* getName() const{$/;"	f	class:Event	access:public	signature:() const
+Event::l1	Event.h	/^	level1 l1;$/;"	m	class:Event	access:public
+Event::name_	Event.h	/^	char name_[32];$/;"	m	class:Event	access:protected
+Event::setName	Event.h	/^	void setName(const char* name){$/;"	f	class:Event	access:public	signature:(const char* name)
+EventFactory	EventFactory.h	/^class EventFactory{$/;"	c
+EventFactory::GetEvent	EventFactory.cpp	/^boost::shared_ptr<Event> EventFactory::GetEvent(const char* buf, int size)$/;"	f	class:EventFactory	signature:(const char* buf, int size)
+EventFactory::GetEvent	EventFactory.h	/^	boost::shared_ptr<Event> GetEvent(const char*, int);$/;"	p	class:EventFactory	access:public	signature:(const char*, int)
+EventFactory::create	EventFactory.h	/^	virtual boost::shared_ptr<Event> create()=0;$/;"	p	class:EventFactory	access:public	signature:()
+GetEvent	EventFactory.cpp	/^boost::shared_ptr<Event> EventFactory::GetEvent(const char* buf, int size)$/;"	f	class:EventFactory	signature:(const char* buf, int size)
+GetEvent	EventFactory.h	/^	boost::shared_ptr<Event> GetEvent(const char*, int);$/;"	p	class:EventFactory	access:public	signature:(const char*, int)
+LDFLAGS	makefile	/^LDFLAGS := $/;"	m
+LIBS	makefile	/^LIBS := boost_system pthread$/;"	m
+MAXDATASIZE	main.cpp	17;"	d	file:
+SERVPORT	main.cpp	16;"	d	file:
+cc	makefile	/^cc = g++$/;"	m
+create	EventFactory.h	/^	virtual boost::shared_ptr<Event> create()=0;$/;"	p	class:EventFactory	access:public	signature:()
+echoEvent	echoEvent.h	/^struct echoEvent:public Event$/;"	s	inherits:Event
+echoEvent::msg	echoEvent.h	/^	char msg[32];$/;"	m	struct:echoEvent	access:public
+featureCode	CommunicationsProtocol.h	/^	char			featureCode[4];	$/;"	m	struct:level1	access:public
+getName	Event.h	/^	const char* getName() const{$/;"	f	class:Event	access:public	signature:() const
+include_dirs	makefile	/^include_dirs := $/;"	m
+jumpCount	CommunicationsProtocol.h	/^	unsigned int	jumpCount;$/;"	m	struct:level1	access:public
+l1	Event.h	/^	level1 l1;$/;"	m	class:Event	access:public
+level1	CommunicationsProtocol.h	/^struct level1{$/;"	s
+level1::featureCode	CommunicationsProtocol.h	/^	char			featureCode[4];	$/;"	m	struct:level1	access:public
+level1::jumpCount	CommunicationsProtocol.h	/^	unsigned int	jumpCount;$/;"	m	struct:level1	access:public
+level1::level2Name	CommunicationsProtocol.h	/^	char			level2Name[32];	\/\/放消息的名字$/;"	m	struct:level1	access:public
+level1::level2Size	CommunicationsProtocol.h	/^	unsigned int	level2Size;$/;"	m	struct:level1	access:public
+level1::missCount	CommunicationsProtocol.h	/^	unsigned int	missCount;$/;"	m	struct:level1	access:public
+level1::serialNumber	CommunicationsProtocol.h	/^	unsigned long	serialNumber;$/;"	m	struct:level1	access:public
+level1::sourceID	CommunicationsProtocol.h	/^	unsigned int	sourceID;$/;"	m	struct:level1	access:public
+level1::targetID	CommunicationsProtocol.h	/^	unsigned int	targetID;$/;"	m	struct:level1	access:public
+level2Name	CommunicationsProtocol.h	/^	char			level2Name[32];	\/\/放消息的名字$/;"	m	struct:level1	access:public
+level2Size	CommunicationsProtocol.h	/^	unsigned int	level2Size;$/;"	m	struct:level1	access:public
+linkFlags	makefile	/^linkFlags := -g -Wall$/;"	m
+main	main.cpp	/^int main(int argc, char *argv[])$/;"	f	signature:(int argc, char *argv[])
+missCount	CommunicationsProtocol.h	/^	unsigned int	missCount;$/;"	m	struct:level1	access:public
+msg	echoEvent.h	/^	char msg[32];$/;"	m	struct:echoEvent	access:public
+name_	Event.h	/^	char name_[32];$/;"	m	class:Event	access:protected
+objects	makefile	/^objects := $(patsubst %.cpp,%.o,$(wildcard *.cpp))$/;"	m
+serialNumber	CommunicationsProtocol.h	/^	unsigned long	serialNumber;$/;"	m	struct:level1	access:public
+setName	Event.h	/^	void setName(const char* name){$/;"	f	class:Event	access:public	signature:(const char* name)
+sourceID	CommunicationsProtocol.h	/^	unsigned int	sourceID;$/;"	m	struct:level1	access:public
+target	makefile	/^target = main$/;"	m
+targetID	CommunicationsProtocol.h	/^	unsigned int	targetID;$/;"	m	struct:level1	access:public
