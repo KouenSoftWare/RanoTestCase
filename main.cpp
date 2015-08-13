@@ -21,19 +21,21 @@ using namespace std;
 #define SERVPORT 7392
 #define MAXDATASIZE 100    /*每次最大数据传输量 */
 
+struct Args{
+	int runCount_;
+	int sendCount_;
+	int id_;
+};
+
 void* Tmain(void* a)
 {
+	Args* args = (Args*)a;
 	char recvBuf[1024];
-	int runTime = 2000;
 	timeval gstart,gend;	
 	gettimeofday(&gstart, NULL);
 	int sock_fd;
-    struct hostent *host;
     struct sockaddr_in serv_addr;
-	char ip[20];
-	strcpy(ip, "127.0.0.1");
-    host=gethostbyname(ip);
-	for(int i = 0; i < runTime; i++){
+	for(int i = 0; i < args->runCount_; i++){
         if((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("socket创建出错！");
         exit(1);
@@ -52,7 +54,7 @@ void* Tmain(void* a)
 	echoEvent event;
 	event.l1.level2Size = sizeof(echoEvent);
 	event.l1.jumpCount = 0;
-	event.l1.sourceID = *((int*)a);
+	event.l1.sourceID = args->id_;
 	event.l1.targetID = -1;
 	event.l1.missCount = 0;
 	event.l1.serialNumber = i;
@@ -65,7 +67,7 @@ void* Tmain(void* a)
 	level1 init;
 	init.jumpCount = 0;
 	init.level2Size = 0;
-	init.sourceID = *((int*)a);
+	init.sourceID = args->id_;
 	init.targetID = -1;
 	init.serialNumber = 0;
 	init.missCount = 0;
@@ -73,27 +75,37 @@ void* Tmain(void* a)
 	memcpy(init.featureCode, "$#@!", 4);	
 
 	send(sock_fd, &init, sizeof(level1), 0);
-	send(sock_fd, &event, sizeof(echoEvent), 0);
-	recv(sock_fd, &recvBuf, 1024, 0);
-	memcpy(&event, recvBuf, sizeof(echoEvent));
+	for(int k = 0; k < args->sendCount_; k++){
+		send(sock_fd, &event, sizeof(echoEvent), 0);
+		recv(sock_fd, &recvBuf, 1024, 0);
+	}
+	//memcpy(&event, recvBuf, sizeof(echoEvent));
 	//cout << "\t" << i+1 << "\tRecvMsg:" << event.msg << endl;
     close(sock_fd);
 	}
 	gettimeofday(&gend, NULL);
 	double t = (gend.tv_sec*1000+gend.tv_usec/1000 - gstart.tv_sec*1000+gstart.tv_usec/1000);
-	cout << *((int*)a) <<  " : 总共用时 " << t << "ms" 
-		 << "\t每个包平均用时:" << t/runTime << "ms"  << endl;
+	cout << args->id_ <<  " : 总共用时 " << t << "ms" 
+		 << "\t每个包平均用时:" << (t/args->runCount_)/args->sendCount_ << "ms"  << endl;
 	return NULL;
 }
 
-int main()
+int main(int iA, char* pA[])
 {
-	cout << "运行几个模拟客户端: ";
+	if(iA < 3){
+		cout << "请输入三个参数，运行客户端数量，每个连接的次数，每次连接发送的数量." << endl;
+		exit(1);
+	}
+	Args arg;
 	int runCount;
-	cin >> runCount;
+	runCount = atoi(pA[1]);
+	arg.runCount_ = atoi(pA[2]);
+	arg.sendCount_ = atoi(pA[3]);
+
 	for (int i=1; i<=runCount; i++){
-		int* id = new int; *id = i;
-		pthread_create(new pthread_t, NULL,  Tmain, id);
+		Args* temp = new Args(arg);
+		temp->id_ = i;
+		pthread_create(new pthread_t, NULL,  Tmain, temp);
 	}
 	sleep(1000);
 }
