@@ -4,7 +4,7 @@ target = main
 
 linkFlags := -g -Wall
 include_dirs := 
-LIBS := boost_system pthread
+LIBS := boost_system protobuf pthread
 LDFLAGS := 
 
 CPPFLAGS =  $(addprefix -I, $(include_dirs)) $(addprefix -L,$(LDFLAGS))

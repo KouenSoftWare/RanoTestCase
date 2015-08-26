@@ -1,24 +1,9 @@
-#include <stdio.h>  
-#include <iostream>
-#include <unistd.h>/*#包含<unistd.h>*/
-#include <stdlib.h>  
-#include <errno.h>  
-#include <arpa/inet.h>
-#include <string.h>  
-#include <sys/types.h>  
-#include <netinet/in.h>  
-#include <sys/socket.h>  
-#include <pthread.h>
-#include <sys/wait.h>  
+#include "Common.h"
 #include <string.h>
-#include <netdb.h>
-#include<sys/time.h>
+#include <stdio.h>
+#include "Protocol.pb.h"
 
-#include "CommunicationsProtocol.h"
-#include "echoEvent.h"
-
-using namespace std;
-#define SERVPORT 7392
+#define SERVPORT 17772
 #define MAXDATASIZE 100    /*每次最大数据传输量 */
 
 struct Args{
@@ -37,56 +22,80 @@ void* Tmain(void* a)
     struct sockaddr_in serv_addr;
 	for(int i = 0; i < args->runCount_; i++){
         if((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        perror("socket创建出错！");
-        exit(1);
-    }
-	bzero(&serv_addr,sizeof(serv_addr));
-    serv_addr.sin_family=AF_INET;
-    serv_addr.sin_port=htons(SERVPORT);
-	serv_addr.sin_addr.s_addr = htons(INADDR_ANY);
-    //serv_addr.sin_addr = *((struct in_addr *)host->h_addr);
-    bzero(&(serv_addr.sin_zero),8);
-    if(connect(sock_fd, (struct sockaddr *)&serv_addr, sizeof(struct sockaddr)) == -1) {
-        perror("connect出错！");
-        exit(1);
-    }
+	        cout << "socket创建出错！" << endl;;
+	        exit(1);
+	    }
+		bzero(&serv_addr,sizeof(serv_addr));
+	    serv_addr.sin_family=AF_INET;
+	    serv_addr.sin_port=htons(SERVPORT);
+		serv_addr.sin_addr.s_addr = htons(INADDR_ANY);
+	    bzero(&(serv_addr.sin_zero),8);
+		if(connect(sock_fd, (struct sockaddr *)&serv_addr, sizeof(struct sockaddr)) == -1) {
+			cout << ("connect出错！") << endl;
+			exit(1);
+		}
+
+		HeadProtocol head;
+		TestProtocol test;
+		test.set_status(10001);
+		test.set_msg("第一次发送信息");
+		string str_test, str_head;
+		test.SerializeToString(&str_test);
+
+		char cHeadSize[10];
+
+		head.set_access_point_fd(0);
+		head.set_source_id(1);
+		head.set_target_id(10001);
+		head.set_proto_body_name("TestProtocol");
+		head.set_proto_body_buffer(str_test);
+		head.set_proto_body_size(str_test.size());
+		head.SerializeToString(&str_head);
+		sprintf(&cHeadSize[0], "%d", str_head.size());
+		send(sock_fd, &cHeadSize[0], 8, 0);
+		send(sock_fd, str_head.c_str(), str_head.size(), 0);
+		memset(&recvBuf[0], 0, 1024);
+		int ret = recv(sock_fd, &recvBuf[0], 1024, 0);
+		
+		head.ParseFromArray(&recvBuf[8], ret-8);
+		head.set_source_id(1);
+		head.set_target_id(10001);
+		head.SerializeToString(&str_head);
+		sprintf(&cHeadSize[0], "%d", str_head.size());
+		send(sock_fd, &cHeadSize[0], 8, 0);
+		send(sock_fd, str_head.c_str(), str_head.size(), 0);
+
+		memset(&recvBuf[0], 0, 1024);
+		ret = recv(sock_fd, &recvBuf[0], 1024, 0);
 	
-	echoEvent event;
-	event.l1.level2Size = sizeof(echoEvent);
-	event.l1.jumpCount = 0;
-	event.l1.sourceID = args->id_;
-	event.l1.targetID = -1;
-	event.l1.missCount = 0;
-	event.l1.serialNumber = i;
-	event.setName("echoEvent");
-	memcpy(event.l1.level2Name, "echoEvent", 32);	
-	memcpy(event.l1.featureCode, "$#@!", 4);	
+		head.ParseFromArray(&recvBuf[8], ret-8);
+		head.set_source_id(1);
+		head.set_target_id(10001);
+		head.SerializeToString(&str_head);
+		sprintf(&cHeadSize[0], "%d", str_head.size());
+		send(sock_fd, &cHeadSize[0], 8, 0);
+		send(sock_fd, str_head.c_str(), str_head.size(), 0);
 
-	strcpy(event.msg, "Hello,World!");	
+		memset(&recvBuf[0], 0, 1024);
+		ret = recv(sock_fd, &recvBuf[0], 1024, 0);
 
-	level1 init;
-	init.jumpCount = 0;
-	init.level2Size = 0;
-	init.sourceID = args->id_;
-	init.targetID = -1;
-	init.serialNumber = 0;
-	init.missCount = 0;
-	memcpy(init.level2Name, "InitEvent", 32);	
-	memcpy(init.featureCode, "$#@!", 4);	
+		head.ParseFromArray(&recvBuf[8], ret-8);
+		head.set_source_id(1);
+		head.set_target_id(10001);
+		head.SerializeToString(&str_head);
+		sprintf(&cHeadSize[0], "%d", str_head.size());
+		send(sock_fd, &cHeadSize[0], 8, 0);
+		send(sock_fd, str_head.c_str(), str_head.size(), 0);
 
-	send(sock_fd, &init, sizeof(level1), 0);
-	for(int k = 0; k < args->sendCount_; k++){
-		send(sock_fd, &event, sizeof(echoEvent), 0);
-		recv(sock_fd, &recvBuf, 1024, 0);
-	}
-	//memcpy(&event, recvBuf, sizeof(echoEvent));
-	//cout << "\t" << i+1 << "\tRecvMsg:" << event.msg << endl;
-    close(sock_fd);
+		memset(&recvBuf[0], 0, 1024);
+		ret = recv(sock_fd, &recvBuf[0], 1024, 0);
+
+		close(sock_fd);
 	}
 	gettimeofday(&gend, NULL);
 	double t = (gend.tv_sec*1000+gend.tv_usec/1000 - gstart.tv_sec*1000+gstart.tv_usec/1000);
 	cout << args->id_ <<  " : 总共用时 " << t << "ms" 
-		 << "\t每个包平均用时:" << (t/args->runCount_)/args->sendCount_ << "ms"  << endl;
+		 << "\t每个包平均用时:" << ((t/args->runCount_)/args->sendCount_)*1000 << "us"  << endl;
 	return NULL;
 }
 
